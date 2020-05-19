@@ -250,6 +250,7 @@ class Lightbox extends Component {
 			images,
 			onClickImage,
 			showThumbnails,
+			renderImage,
 		} = this.props;
 
 		const { imageLoaded } = this.state;
@@ -264,33 +265,34 @@ class Lightbox extends Component {
 		const heightOffset = `${this.theme.header.height + this.theme.footer.height + thumbnailsSize
 			+ (this.theme.container.gutter.vertical)}px`;
 
+		const imgProps = {
+			className: (css(this.classes.image, imageLoaded && this.classes.imageLoaded)),
+			onClick: onClickImage,
+			sizes: sizes,
+			alt: image.alt,
+			src: image.src,
+			srcSet: sourceSet,
+			style: {
+				cursor: onClickImage ? 'pointer' : 'auto',
+				maxHeight: `calc(100vh - ${heightOffset})`,
+			},
+		};
 		return (
 			<figure className={css(this.classes.figure)}>
-				{/*
-					Re-implement when react warning "unknown props"
-					https://fb.me/react-unknown-prop is resolved
-					<Swipeable onSwipedLeft={this.gotoNext} onSwipedRight={this.gotoPrev} />
-				*/}
-				<img
-					className={css(this.classes.image, imageLoaded && this.classes.imageLoaded)}
-					onClick={onClickImage}
-					sizes={sizes}
-					alt={image.alt}
-					src={image.src}
-					srcSet={sourceSet}
-					style={{
-						cursor: onClickImage ? 'pointer' : 'auto',
-						maxHeight: `calc(100vh - ${heightOffset})`,
-					}}
-				/>
+			{/*
+				Re-implement when react warning "unknown props"
+				https://fb.me/react-unknown-prop is resolved
+				<Swipeable onSwipedLeft={this.gotoNext} onSwipedRight={this.gotoPrev} />
+			*/}
+				{renderImage(imgProps)}
 			</figure>
 		);
 	}
 	renderThumbnails () {
 		const { images, currentImage, onClickThumbnail, showThumbnails, thumbnailOffset } = this.props;
-
+		
 		if (!showThumbnails) return;
-
+		
 		return (
 			<PaginatedThumbnails
 				currentImage={currentImage}
@@ -417,6 +419,7 @@ Lightbox.defaultProps = {
 	theme: {},
 	thumbnailOffset: 2,
 	width: 1024,
+	renderImage: (imgProps) => <img {...imgProps} />,
 };
 Lightbox.childContextTypes = {
 	theme: PropTypes.object.isRequired,
